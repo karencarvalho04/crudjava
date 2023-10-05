@@ -1,0 +1,58 @@
+import com.mysql.cj.protocol.Resultset;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Scanner;
+
+public class Conexao {
+
+    final String URL = "jdbc:mysql://localhost:3306/cadaluno1";
+    final String USER = "root";
+    final String PASSWORD = "root"; //root99
+
+    public Conexao(){
+        try{
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
+            System.out.println("Conectado!");
+
+            String insert = "INSERT INTO aluno (nome, matricula) VALUES (?, ?)";
+            String consulta = "SELECT * FROM aluno";
+
+            Scanner sc = new Scanner(System.in);
+
+            System.out.println("Digite o nome do aluno");
+            String nomeAluno = sc.nextLine();
+            System.out.println("Digite a matrícula do aluno");
+            int matriculaAluno = sc.nextInt();
+
+            //Preparação dos dados para enviar ao banco
+            PreparedStatement stmt = con.prepareStatement(insert);
+            stmt.setString(1,nomeAluno);
+            stmt.setInt(2, matriculaAluno);
+
+            //Executar a inserção de dados
+            int linhasAfetadas = stmt.executeUpdate();
+            System.out.println("Dados inseridos!");
+
+            //Exibe os dados da tabela após a inserção
+            //Statement se refere a consultas (operações) no banco de dados
+            ResultSet resultset = stmt.executeQuery(consulta);
+
+            while (resultset.next()){
+                System.out.println("Nome: " + resultset.getString("nome"));
+                System.out.println("Matrícula: " + resultset.getInt("matricula"));
+            }
+
+
+
+        } catch (Exception e){
+            System.out.println(e);
+        }
+    }
+    public static void main(String[] args) {
+        Conexao conexao = new Conexao();
+    }
+}
